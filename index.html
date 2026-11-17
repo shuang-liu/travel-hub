@@ -1,0 +1,2535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta id="themeColorMeta" name="theme-color" content="#f5efe6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Travel Hub">
+<title>Travel Hub</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<style>
+  :root, :root[data-theme="light"] {
+    color-scheme: light;
+    --bg: #f5efe6;
+    --surface: #fbf8f3;
+    --surface-glass: rgba(251, 248, 243, 0.90);
+    --surface-subtle: #efe8dc;
+    --text: #2b2520;
+    --text-secondary: #5c5349;
+    --muted: #8a7f72;
+    --border: #e4dccf;
+    --border-strong: #cfc4b4;
+    --accent: #0f6a6d;
+    --accent-soft: rgba(15, 106, 109, 0.10);
+    --accent-text: #0b5255;
+    --star: #b86b0b;
+    --warn: #c46d08;
+    --shadow-dock: 0 8px 24px -6px rgba(43, 37, 32, 0.14);
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0b0e14;
+    --surface: #121721;
+    --surface-glass: rgba(18, 23, 33, 0.88);
+    --surface-subtle: #181f2c;
+    --text: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --muted: #64748b;
+    --border: #1e2736;
+    --border-strong: #2d3a4f;
+    --accent: #2dd4bf;
+    --accent-soft: rgba(45, 212, 191, 0.12);
+    --accent-text: #5eead4;
+    --star: #fbbf24;
+    --warn: #fbbf24;
+    --shadow-dock: 0 10px 28px -6px rgba(0, 0, 0, 0.65);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0b0e14;
+      --surface: #121721;
+      --surface-glass: rgba(18, 23, 33, 0.88);
+      --surface-subtle: #181f2c;
+      --text: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --muted: #64748b;
+      --border: #1e2736;
+      --border-strong: #2d3a4f;
+      --accent: #2dd4bf;
+      --accent-soft: rgba(45, 212, 191, 0.12);
+      --accent-text: #5eead4;
+      --star: #fbbf24;
+      --warn: #fbbf24;
+      --shadow-dock: 0 10px 28px -6px rgba(0, 0, 0, 0.65);
+    }
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", Roboto, "PingFang SC", "Noto Sans CJK SC", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.58;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+  a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  a:hover { text-decoration: underline; }
+
+  header.top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: var(--surface-glass);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: calc(8px + env(safe-area-inset-top)) 14px 8px;
+  }
+  .top-inner {
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .title-mark {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dirty-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--warn);
+    display: none;
+  }
+  .dirty-dot.show { display: inline-block; }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+  .search-input {
+    width: 100%;
+    padding: 6px 26px 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-subtle);
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+  }
+  .search-input:focus {
+    border-color: var(--border-strong);
+    background: var(--surface);
+  }
+  .clear-search {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 15px;
+    cursor: pointer;
+    display: none;
+    padding: 0 3px;
+  }
+  .ghost-btn {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    border-radius: 8px;
+    padding: 5.5px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .ghost-btn:hover { color: var(--text); border-color: var(--border-strong); text-decoration: none; }
+
+  .ghost-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  :root[data-theme="dark"] .ghost-btn.active { color: #071318; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .ghost-btn.active { color: #071318; }
+  }
+
+  /* Self-explanatory 3-way Theme Segmented Pill */
+  .theme-seg {
+    display: inline-flex;
+    align-items: center;
+    background: var(--surface-subtle);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2px;
+    gap: 1px;
+    flex-shrink: 0;
+  }
+  .theme-opt {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 3.5px 6.5px;
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 23px;
+  }
+  .theme-opt:hover { color: var(--text); }
+  .theme-opt.active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  }
+  .theme-opt svg { width: 13px; height: 13px; display: block; }
+
+  @media (max-width: 500px) {
+    .top-inner { gap: 6px; }
+    .title-mark { font-size: 14px; }
+    .ghost-btn { padding: 5px 8px; font-size: 11.5px; }
+    .hide-xs { display: none; }
+  }
+
+  /* In-Place Edit Mode Cues & Block WYSIWYG Editor */
+  body.edit-mode .editable-block {
+    position: relative;
+    border-radius: 7px;
+    outline: 1px dashed var(--border-strong);
+    outline-offset: 3px;
+    cursor: text;
+    transition: outline-color 0.12s ease, background 0.12s ease;
+  }
+  body.edit-mode .editable-block:hover {
+    outline-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .card-edit-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top: 1px dashed var(--border);
+  }
+  .section-card .card-edit-bar {
+    margin: 0;
+    padding: 8px 15px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .inline-editor {
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    border-radius: 10px;
+    padding: 9px 10px;
+    margin: 6px 0;
+    box-shadow: 0 6px 20px -6px rgba(15, 23, 42, 0.18);
+  }
+  .ie-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 7px;
+  }
+  .ie-tools {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .ie-tool {
+    border: 1px solid var(--border);
+    background: var(--surface-subtle);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 3.5px 7.5px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    line-height: 1.2;
+  }
+  .ie-tool:hover { border-color: var(--border-strong); }
+  .ie-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 2px 6px;
+    background: var(--surface-subtle);
+    border-radius: 5px;
+  }
+  .ie-mode-seg {
+    display: inline-flex;
+    background: var(--surface-subtle);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.5px;
+  }
+  .ie-mode-btn {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .ie-mode-btn.active {
+    background: var(--surface);
+    color: var(--text);
+  }
+  .ie-link-bar {
+    display: none;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 7px;
+    padding: 5px 7px;
+    background: var(--surface-subtle);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+  }
+  .ie-link-bar.show { display: flex; flex-wrap: wrap; }
+  .ie-link-input {
+    flex: 1;
+    min-width: 140px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 5px;
+    padding: 4px 7px;
+    font-size: 12px;
+    outline: none;
+  }
+  .ie-rich {
+    min-height: 40px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: 7px;
+    background: var(--surface-subtle);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.58;
+    outline: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .ie-rich:focus {
+    background: var(--surface);
+    border-color: var(--accent);
+  }
+  .ie-rich a.ce-link {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .ie-rich code.ce-code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    padding: 0 4px;
+  }
+  .ie-rich span.ce-pdf {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--accent-text);
+    background: var(--accent-soft);
+    border-radius: 5px;
+    padding: 1px 6px;
+    margin: 0 1px;
+    user-select: all;
+  }
+  .ie-raw {
+    width: 100%;
+    min-height: 76px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: 7px;
+    background: var(--surface-subtle);
+    color: var(--text);
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    line-height: 1.5;
+    resize: vertical;
+    outline: none;
+  }
+  .ie-raw:focus { background: var(--surface); border-color: var(--accent); }
+  .ie-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .ie-danger { color: #dc2626; }
+  :root[data-theme="dark"] .ie-danger { color: #f87171; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .ie-danger { color: #f87171; }
+  }
+
+  main { max-width: 780px; margin: 0 auto; padding: 12px 14px 24px; }
+
+  /* Day Cards */
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  .day-head {
+    padding: 12px 15px;
+    display: grid;
+    grid-template-columns: 68px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  @media (max-width: 460px) {
+    .day-head { grid-template-columns: 60px 1fr auto; padding: 11px 12px; gap: 8px; }
+  }
+  .date-col { line-height: 1.15; }
+  .date-num {
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    display: block;
+  }
+  .date-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    display: block;
+  }
+  .title-col { min-width: 0; }
+  .day-title {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+  }
+  .day-meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chev {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: var(--surface-subtle);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .day-head:hover .chev {
+    border-color: var(--border-strong);
+    color: var(--text);
+  }
+  .chev svg {
+    width: 15px;
+    height: 15px;
+    display: block;
+    transition: transform 0.18s ease;
+  }
+  .day-card.open .chev svg { transform: rotate(180deg); }
+
+  .day-body {
+    display: none;
+    padding: 0 15px 14px;
+    border-top: 1px solid var(--border);
+  }
+  @media (max-width: 460px) { .day-body { padding: 0 12px 12px; } }
+  .day-card.open .day-body { display: block; }
+
+  .route-line {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    padding: 9px 0 6px;
+  }
+
+  /* Pass Rows */
+  .pass-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 6px 0 12px;
+  }
+  .pass-row {
+    display: grid;
+    grid-template-columns: 62px 1fr;
+    gap: 8px;
+    align-items: baseline;
+    background: var(--surface-subtle);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 8px 11px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  @media (max-width: 460px) { .pass-row { grid-template-columns: 1fr; gap: 2px; } }
+  .pass-kind {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .pass-text { min-width: 0; }
+
+  /* Timeline */
+  .tl { margin: 4px 0 0; padding: 0; list-style: none; }
+  .tl-row {
+    display: grid;
+    grid-template-columns: 48px 14px 1fr;
+    gap: 6px;
+    padding-bottom: 11px;
+    position: relative;
+  }
+  .tl-row:last-child { padding-bottom: 0; }
+  .tl-t {
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    text-align: right;
+    padding-top: 2px;
+    white-space: nowrap;
+  }
+  .tl-rail { position: relative; display: flex; justify-content: center; }
+  .tl-rail::after {
+    content: "";
+    position: absolute;
+    top: 13px;
+    bottom: -11px;
+    width: 1px;
+    background: var(--border);
+  }
+  .tl-row:last-child .tl-rail::after { display: none; }
+  .tl-node {
+    width: 6.5px;
+    height: 6.5px;
+    border-radius: 50%;
+    margin-top: 7px;
+    background: var(--surface);
+    border: 1.5px solid var(--border-strong);
+    z-index: 1;
+  }
+  .tl-row.is-star .tl-node { background: var(--star); border-color: var(--star); }
+  .tl-body { font-size: 13.8px; line-height: 1.56; min-width: 0; }
+  .paren-note { font-size: 12.8px; color: var(--text-secondary); }
+
+  /* Inline Tokens */
+  code.copyable {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: 5px;
+    padding: 0 5px;
+    cursor: pointer;
+  }
+  code.copyable:hover { border-color: var(--accent); color: var(--accent); }
+  .doc-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--accent-text);
+    background: var(--accent-soft);
+    border: none;
+    border-radius: 5px;
+    padding: 1px 6.5px;
+    margin: 0 1px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .doc-pill:hover { text-decoration: underline; }
+  .star-mark { color: var(--star); font-weight: 700; margin-right: 1px; }
+
+  /* Checklist & Notes Cards */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .section-head {
+    padding: 11px 15px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-head h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .task-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9.5px 15px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+  }
+  .task-row:last-child { border-bottom: none; }
+  .task-row input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    margin-top: 3.5px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .task-row.done .task-text { text-decoration: line-through; color: var(--muted); }
+
+  .md-prose { padding: 6px 15px 13px; font-size: 13.6px; }
+  .md-prose ul { padding-left: 18px; margin: 6px 0; }
+  .md-prose li { margin: 6px 0; }
+  .md-prose p { margin: 6px 0; }
+
+  /* Sync & Source Panels */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 15px;
+    margin-bottom: 10px;
+  }
+  .panel h3 { margin: 0 0 8px; font-size: 14px; font-weight: 600; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  @media (max-width: 520px) { .grid-2 { grid-template-columns: 1fr; } }
+  .field {
+    width: 100%;
+    padding: 7px 10px;
+    border-radius: 7px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-subtle);
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+  }
+  .field:focus { border-color: var(--accent); background: var(--surface); }
+  .btn-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .btn {
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    padding: 6.5px 11px;
+    border-radius: 7px;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--surface-subtle); }
+  .btn.solid { background: var(--text); color: var(--surface); border-color: var(--text); }
+
+  /* Bottom Dock */
+  .dock-wrap {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    padding: 0 12px;
+    pointer-events: none;
+  }
+  nav.dock {
+    pointer-events: auto;
+    display: inline-flex;
+    gap: 2px;
+    background: var(--surface-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 4px;
+    box-shadow: var(--shadow-dock);
+  }
+  .dock-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    padding: 6.5px 14px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .dock-btn:hover { color: var(--text); }
+  .dock-btn.active { background: var(--text); color: var(--surface); font-weight: 600; }
+
+  /* PDF Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(9, 12, 18, 0.55);
+    z-index: 80;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal-sheet {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 780px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-head {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .modal-head h3 { margin: 0; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .modal-body { padding: 12px; overflow-y: auto; flex: 1; }
+  .pdf-frame { width: 100%; height: 70vh; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
+
+  #toast {
+    position: fixed;
+    bottom: calc(64px + env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--surface);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.16s ease;
+    z-index: 95;
+  }
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header class="top-bar">
+  <div class="top-inner">
+    <span class="title-mark">
+      <span id="docTitleMark">Travel Hub</span>
+      <span id="dirtyDot" class="dirty-dot" title="Unsaved / unsynced local edits"></span>
+    </span>
+    <div class="search-wrap">
+      <input id="searchInput" class="search-input" type="search" placeholder="Search...">
+      <button id="clearSearchBtn" class="clear-search" aria-label="Clear">&times;</button>
+    </div>
+    <button class="ghost-btn" id="editModeBtn" title="Toggle tap-to-edit mode">Edit</button>
+    <button class="ghost-btn" id="undoBtn" style="display:none" title="Undo last edit">Undo</button>
+    <button class="ghost-btn" id="expandToggleBtn">Expand<span class="hide-xs"> all</span></button>
+    <button class="ghost-btn" id="removeDoneBtn" style="display:none">Remove done</button>
+    <div class="theme-seg" role="group" aria-label="Color theme">
+      <button type="button" class="theme-opt" data-theme-opt="light" title="Light theme" aria-label="Light theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77"/></svg>
+      </button>
+      <button type="button" class="theme-opt active" data-theme-opt="system" title="Match phone system theme">Auto</button>
+      <button type="button" class="theme-opt" data-theme-opt="dark" title="Dark theme" aria-label="Dark theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.8 6.8 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="appMain"></main>
+
+<div class="dock-wrap">
+  <nav class="dock" aria-label="Navigation">
+    <button class="dock-btn active" data-tab="itinerary">Itinerary</button>
+    <button class="dock-btn" data-tab="tasks">Checklist</button>
+    <button class="dock-btn" data-tab="notes">Notes</button>
+    <button class="dock-btn" data-tab="sync">Sync</button>
+  </nav>
+</div>
+
+<div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true">
+  <div class="modal-sheet">
+    <div class="modal-head">
+      <h3 id="modalTitle">PDF</h3>
+      <div id="modalActions" style="display:flex;gap:6px;align-items:center"></div>
+    </div>
+    <div id="modalBody" class="modal-body"></div>
+  </div>
+</div>
+
+<input type="file" id="localFileInput" accept=".md,.markdown,text/markdown,text/plain" style="display:none">
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const LS_GH = 'th_gh_cfg_v1';
+  const LS_THEME = 'th_theme_v1';
+
+  function lsGet(k) { try { return window.localStorage.getItem(k); } catch (_) { return null; } }
+  function lsSet(k, v) { try { window.localStorage.setItem(k, v); } catch (_) {} }
+  function lsRemove(k) { try { window.localStorage.removeItem(k); } catch (_) {} }
+
+
+  function activeTripNamespace() {
+    const t = (getGhCfg().trip || '').replace(/^\/+|\/+$/g, '');
+    return t || 'default';
+  }
+  function keyMd(ns = activeTripNamespace()) { return `th_md_v1:${ns}`; }
+  function keyDirty(ns = activeTripNamespace()) { return `th_dirty_v1:${ns}`; }
+  function keySha(ns = activeTripNamespace()) { return `th_sha_v1:${ns}`; }
+  function idbPdfKey(fname, ns = activeTripNamespace()) { return `pdf:${ns}:${fname}`; }
+  function idbMdKey(ns = activeTripNamespace()) { return `md:${ns}`; }
+  function ghTripPrefix(cfg = getGhCfg()) {
+    const t = (cfg.trip || '').replace(/^\/+|\/+$/g, '');
+    return t ? `${t}/` : '';
+  }
+
+  const embeddedEl = document.getElementById('EMBEDDED_BUNDLE');
+  const embeddedBundle = embeddedEl ? JSON.parse(embeddedEl.textContent) : null;
+  const embeddedBlobCache = new Map();
+  const pdfBlobUrlMap = new Map();
+
+  function getEmbeddedPdfBlob(fname) {
+    if (embeddedBlobCache.has(fname)) return embeddedBlobCache.get(fname);
+    const b64 = embeddedBundle?.pdfs?.[fname];
+    if (!b64) return null;
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const blob = new Blob([bytes], { type: 'application/pdf' });
+    embeddedBlobCache.set(fname, blob);
+    return blob;
+  }
+
+  const state = {
+    md: lsGet(keyMd()) || (embeddedBundle?.md || ''),
+    dirty: lsGet(keyDirty()) === '1',
+    sha: lsGet(keySha()) || '',
+    tab: 'itinerary',
+    query: '',
+    allExpanded: false,
+    openDays: new Set(),
+    editMode: false,
+    activeEdit: null,
+    undoStack: [],
+    parsed: null
+  };
+
+  function openVaultDb() {
+    return new Promise((resolve, reject) => {
+      if (!window.indexedDB) return reject(new Error('No IndexedDB'));
+      const req = indexedDB.open('travel_hub_vault_v1', 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains('files')) db.createObjectStore('files');
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+  async function idbPut(key, val) {
+    try {
+      const db = await openVaultDb();
+      return new Promise((res, rej) => {
+        const tx = db.transaction('files', 'readwrite');
+        tx.objectStore('files').put(val, key);
+        tx.oncomplete = () => res(true);
+        tx.onerror = () => rej(tx.error);
+      });
+    } catch (_) { return false; }
+  }
+  async function idbGet(key) {
+    try {
+      const db = await openVaultDb();
+      return new Promise((res) => {
+        const tx = db.transaction('files', 'readonly');
+        const req = tx.objectStore('files').get(key);
+        req.onsuccess = () => res(req.result || null);
+        req.onerror = () => res(null);
+      });
+    } catch (_) { return null; }
+  }
+
+
+  function getReferencedPdfs(mdText) {
+    const set = new Set();
+    const re = /\.\/attachments\/([^)\s]+\.pdf)/g;
+    let m;
+    while ((m = re.exec(mdText || '')) !== null) set.add(m[1]);
+    return Array.from(set);
+  }
+
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => el.classList.remove('show'), 1800);
+  }
+
+  function updateDirtyIndicator() {
+    document.getElementById('dirtyDot').classList.toggle('show', state.dirty);
+  }
+
+  async function saveToLocalServer(mdText) {
+    if (!['127.0.0.1', 'localhost'].includes(location.hostname)) return false;
+    try {
+      const r = await fetch('./plan.md', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'text/markdown;charset=utf-8' },
+        body: mdText
+      });
+      if (r.ok) {
+        state.dirty = false;
+        lsSet(keyDirty(), '0');
+        updateDirtyIndicator();
+        return true;
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  function getGhCfg() {
+    try { return JSON.parse(lsGet(LS_GH) || '{}'); } catch (_) { return {}; }
+  }
+  function saveGhCfg(cfg) {
+    lsSet(LS_GH, JSON.stringify(cfg));
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function stripMdInline(s) {
+    return String(s)
+      .replace(/\[([^\]]+)\]\((?:[^()\s]+|\([^()\s]*\))+\)/g, '$1')
+      .replace(/[*`]/g, '')
+      .trim();
+  }
+
+  function renderInline(text, softenParens = false) {
+    let out = escapeHtml(String(text).replace(/\\#/g, '#'));
+    out = out.replace(/`([^`]+)`/g, (_, code) =>
+      `<code class="copyable" data-copy="${code}" title="Click to copy">${code}</code>`
+    );
+    out = out.replace(/\[([^\]]+)\]\(((?:[^()\s]+|\([^()\s]*\))+)\)/g, (_, label, href) => {
+      const isPdf = href.toLowerCase().endsWith('.pdf');
+      const isTel = href.startsWith('tel:');
+      const fmtLabel = label
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/★/g, '<span class="star-mark">★</span>');
+      if (isPdf) {
+        const fname = href.split('/').pop();
+        const readyUrl = pdfBlobUrlMap.get(idbPdfKey(fname)) || '';
+        const targetHref = readyUrl || href;
+        return `<a class="doc-pill pdf-trigger" href="${escapeHtml(targetHref)}" target="_blank" data-pdf="${escapeHtml(fname)}" data-href="${escapeHtml(href)}">${fmtLabel}</a>`;
+      }
+      if (isTel) {
+        return `<a class="doc-pill" href="${href}">${fmtLabel}</a>`;
+      }
+      return `<a href="${href}" target="_blank" rel="noopener">${fmtLabel}</a>`;
+    });
+    out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    out = out.replace(/(^|[\s(])\*([^*]+)\*(?=[\s).,;:!?]|$)/g, '$1<em>$2</em>');
+    out = out.replace(/★/g, '<span class="star-mark">★</span>');
+    if (softenParens) {
+      out = out.replace(/（([^（）]{24,})）/g, '<span class="paren-note">（$1）</span>');
+    }
+    return out;
+  }
+
+  function renderMarkdownLines(lineObjs) {
+    let html = '';
+    let inUl = false;
+    const closeUl = () => { if (inUl) { html += '</ul>'; inUl = false; } };
+    for (let i = 0; i < lineObjs.length; i++) {
+      const item = typeof lineObjs[i] === 'object' ? lineObjs[i] : { idx: -1, line: lineObjs[i] };
+      const trimmed = item.line.trim();
+      if (!trimmed || trimmed === '---') { closeUl(); continue; }
+      const editAttr = item.idx >= 0 ? ` class="editable-block" data-edit-line="${item.idx}"` : '';
+      if (state.activeEdit && state.activeEdit.lineIdx === item.idx && state.activeEdit.endLineIdx === item.idx) {
+        closeUl();
+        html += `<div data-editor-mount="${item.idx}"></div>`;
+        continue;
+      }
+      if (trimmed.startsWith('>')) {
+        closeUl();
+        html += `<p${editAttr}>${renderInline(trimmed.replace(/^>\s?/, ''))}</p>`;
+        continue;
+      }
+      if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+        if (!inUl) { html += '<ul>'; inUl = true; }
+        html += `<li${editAttr}>${renderInline(trimmed.slice(2))}</li>`;
+        continue;
+      }
+      closeUl();
+      html += `<p${editAttr}>${renderInline(trimmed)}</p>`;
+    }
+    closeUl();
+    return `<div class="md-prose">${html}</div>`;
+  }
+
+  function parsePlan(md) {
+    const lines = md.split(/\r?\n/);
+    let docTitle = '';
+    const heroLines = [];
+    const sections = [];
+    let curSec = null;
+    let curH3 = null;
+
+    for (let idx = 0; idx < lines.length; idx++) {
+      const line = lines[idx];
+      if (line.startsWith('# ')) {
+        if (!docTitle) docTitle = line.slice(2).trim();
+        continue;
+      }
+      if (!curSec && line.trim().startsWith('>')) {
+        heroLines.push({ idx, line });
+        continue;
+      }
+      if (line.startsWith('## ')) {
+        curSec = { title: line.slice(3).trim(), lineIdx: idx, lastContentIdx: idx, hasTasks: false, h3s: [], rawLines: [] };
+        sections.push(curSec);
+        curH3 = null;
+        continue;
+      }
+      if (!curSec) continue;
+      curSec.rawLines.push({ idx, line });
+      if (line.trim()) curSec.lastContentIdx = idx;
+
+      if (line.startsWith('### ')) {
+        curH3 = { title: line.slice(4).trim(), lineIdx: idx, lastContentIdx: idx, lines: [], items: [], tasks: [] };
+        curSec.h3s.push(curH3);
+        continue;
+      }
+      const taskMatch = line.match(/^\s*-\s+\[([ xX])\]\s+(.*)$/);
+      if (taskMatch) {
+        curSec.hasTasks = true;
+        if (!curH3) {
+          curH3 = { title: curSec.title, lineIdx: curSec.lineIdx, lastContentIdx: idx, lines: [], items: [], tasks: [] };
+          curSec.h3s.push(curH3);
+        }
+        curH3.tasks.push({
+          lineIdx: idx,
+          checked: taskMatch[1].toLowerCase() === 'x',
+          text: taskMatch[2]
+        });
+      }
+      if (curH3) {
+        curH3.lines.push(line);
+        curH3.items.push({ idx, line });
+        if (line.trim()) curH3.lastContentIdx = idx;
+      }
+    }
+    return { docTitle, heroLines, sections, totalLines: lines.length };
+  }
+
+  function findItinerarySec(parsed) {
+    if (!parsed?.sections?.length) return null;
+    return parsed.sections.find((s) => /^(每日行程|行程|itinerary|schedule|daily\s+plan|day[\s-]by[\s-]day)/i.test(s.title))
+      || parsed.sections.find((s) => !s.hasTasks && s.h3s.length > 0)
+      || null;
+  }
+
+  function findTaskSections(parsed) {
+    if (!parsed?.sections?.length) return [];
+    const byTasks = parsed.sections.filter((s) => s.hasTasks);
+    if (byTasks.length) return byTasks;
+    return parsed.sections.filter((s) => /^(待办|checklist|tasks|to-?do)/i.test(s.title));
+  }
+
+  function updateHeaderTitle(parsed) {
+    const el = document.getElementById('docTitleMark');
+    if (!el) return;
+    const raw = (parsed?.docTitle || '').trim();
+    const shortH1 = raw ? raw.split(/[｜|—–]/)[0].trim() : '';
+    const cfgTrip = (getGhCfg().trip || '').trim();
+    const fallbackSlug = cfgTrip ? cfgTrip.toUpperCase().replace(/-/g, ' ') : 'Travel Hub';
+    const label = (shortH1 && shortH1.length <= 18) ? shortH1 : fallbackSlug;
+    el.textContent = label;
+    document.title = raw ? `${label} · Travel Hub` : 'Travel Hub';
+  }
+
+  // --- Lossless Single-Block Rich WYSIWYG <-> Markdown Engine ---
+  function splitBlockPrefix(rawLine) {
+    let m;
+    if ((m = rawLine.match(/^(#{1,6}\s+)(.*)$/))) {
+      return { prefix: m[1], badge: m[1].trim(), body: m[2] };
+    }
+    if ((m = rawLine.match(/^(\s*-\s+\[[ xX]\]\s+)(.*)$/))) {
+      return { prefix: m[1], badge: 'Task', body: m[2] };
+    }
+    if ((m = rawLine.match(/^(\s*-\s+\*\*(?:路线[^*]*|航班(?:通行证)?|火车(?:通行证)?|渡轮(?:通行证)?|租车(?:通行证)?|住宿(?:通行证)?|(?:乘客|Passenger|Traveler|Pax)\s*[·•:-]?\s*[^*]+?|Route[^*]*|Drive[^*]*|Flight|Train|Ferry|Car|Rental|Stay|Hotel|Lodging|Pass|Ticket)[：:]\*\*\s*)(.*)$/i))) {
+      const tag = m[1].replace(/^\s*-\s+\*\*/, '').replace(/[：:]\*\*\s*$/, '');
+      return { prefix: m[1], badge: tag, body: m[2] };
+    }
+    if ((m = rawLine.match(/^(\s*[-*]\s+)(.*)$/))) {
+      return { prefix: m[1], badge: 'Bullet', body: m[2] };
+    }
+    if ((m = rawLine.match(/^(\s*>\s*)(.*)$/))) {
+      return { prefix: m[1], badge: 'Note', body: m[2] };
+    }
+    return { prefix: '', badge: 'Text', body: rawLine };
+  }
+
+  function mdInlineToRichHtml(md) {
+    const tokenRe = /\[([^\]]+)\]\(((?:[^()\s]+|\([^()\s]*\))+)\)|\*\*((?:[^*]|\*(?!\*))+)\*\*|`([^`]+)`/g;
+    let out = '';
+    let last = 0;
+    let m;
+    while ((m = tokenRe.exec(md)) !== null) {
+      if (m.index > last) out += escapeHtml(md.slice(last, m.index));
+      if (m[1] !== undefined) {
+        const label = m[1];
+        const href = m[2];
+        if (href.toLowerCase().endsWith('.pdf')) {
+          out += `<span class="ce-pdf" contenteditable="false" data-href="${escapeHtml(href)}" data-label="${escapeHtml(label)}">${escapeHtml(label)}</span>\u200B`;
+        } else {
+          out += `<a class="ce-link" href="${escapeHtml(href)}" data-href="${escapeHtml(href)}">${mdInlineToRichHtml(label)}</a>`;
+        }
+      } else if (m[3] !== undefined) {
+        out += `<strong>${mdInlineToRichHtml(m[3])}</strong>`;
+      } else if (m[4] !== undefined) {
+        out += `<code class="ce-code">${escapeHtml(m[4])}</code>`;
+      }
+      last = tokenRe.lastIndex;
+    }
+    if (last < md.length) out += escapeHtml(md.slice(last));
+    return out;
+  }
+
+  function richDomToMdInline(root) {
+    function walk(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return node.nodeValue.replace(/\u200B/g, '').replace(/\u00A0/g, ' ');
+      }
+      if (node.nodeType !== Node.ELEMENT_NODE) return '';
+      const tag = node.tagName;
+      if (tag === 'BR') return ' ';
+      if (node.classList.contains('ce-pdf')) {
+        return `[${node.getAttribute('data-label') || node.textContent}](${node.getAttribute('data-href') || ''})`;
+      }
+      if (tag === 'CODE') {
+        const txt = node.textContent.replace(/\u200B/g, '').replace(/\u00A0/g, ' ');
+        return txt ? '`' + txt + '`' : '';
+      }
+      const inner = Array.from(node.childNodes).map(walk).join('');
+      if (tag === 'A') {
+        const href = node.getAttribute('data-href') || node.getAttribute('href') || '';
+        return inner ? `[${inner}](${href})` : '';
+      }
+      if (tag === 'STRONG' || tag === 'B') {
+        const sm = inner.match(/^(\s*)([\s\S]*?)(\s*)$/);
+        return (sm && sm[2]) ? `${sm[1]}**${sm[2]}**${sm[3]}` : inner;
+      }
+      if (tag === 'EM' || tag === 'I') {
+        const sm = inner.match(/^(\s*)([\s\S]*?)(\s*)$/);
+        return (sm && sm[2]) ? `${sm[1]}*${sm[2]}*${sm[3]}` : inner;
+      }
+      return inner;
+    }
+    return Array.from(root.childNodes).map(walk).join('').replace(/\s*\n\s*/g, ' ');
+  }
+
+  function commitMdChange(newMd, toastMsg = '') {
+    if (newMd === state.md) return;
+    state.undoStack.push(state.md);
+    if (state.undoStack.length > 25) state.undoStack.shift();
+    state.md = newMd;
+    state.dirty = true;
+    lsSet(keyMd(), state.md);
+    lsSet(keyDirty(), '1');
+    idbPut(idbMdKey(), state.md);
+    state.parsed = parsePlan(state.md);
+    updateDirtyIndicator();
+    updateUndoButton();
+    saveToLocalServer(state.md);
+    if (toastMsg) showToast(toastMsg);
+  }
+
+  function updateUndoButton() {
+    const btn = document.getElementById('undoBtn');
+    if (!btn) return;
+    btn.style.display = state.undoStack.length > 0 ? '' : 'none';
+  }
+
+  function undoLastEdit() {
+    if (!state.undoStack.length) return;
+    const prev = state.undoStack.pop();
+    state.activeEdit = null;
+    state.md = prev;
+    state.dirty = true;
+    lsSet(keyMd(), state.md);
+    lsSet(keyDirty(), '1');
+    idbPut(idbMdKey(), state.md);
+    state.parsed = parsePlan(state.md);
+    updateDirtyIndicator();
+    updateUndoButton();
+    saveToLocalServer(state.md);
+    render();
+    showToast('Undid last change');
+  }
+
+  function findSiblingBounds(lineIdx) {
+    const lines = state.md.split(/\r?\n/);
+    let minIdx = 0;
+    let maxIdx = lines.length - 1;
+    for (let i = lineIdx - 1; i >= 0; i--) {
+      if (/^#{1,3}\s+/.test(lines[i])) { minIdx = i + 1; break; }
+    }
+    for (let i = lineIdx + 1; i < lines.length; i++) {
+      if (/^#{1,3}\s+/.test(lines[i])) { maxIdx = i - 1; break; }
+    }
+    while (maxIdx > minIdx && !lines[maxIdx].trim()) maxIdx--;
+    return { lines, minIdx, maxIdx };
+  }
+
+  function openBlockEditor(lineIdx, endLineIdx = lineIdx, opts = {}) {
+    if (!opts.skipFlush) flushActiveInlineEditor();
+    state.activeEdit = {
+      lineIdx,
+      endLineIdx,
+      mode: (endLineIdx > lineIdx || opts.raw) ? 'raw' : 'rich',
+      isNew: !!opts.isNew
+    };
+    render();
+    requestAnimationFrame(() => {
+      const mount = document.querySelector(`[data-editor-mount="${lineIdx}"]`);
+      const focusEl = mount?.querySelector('.ie-rich, .ie-raw');
+      if (focusEl) {
+        focusEl.focus();
+        if (focusEl.tagName === 'TEXTAREA') {
+          focusEl.selectionStart = focusEl.selectionEnd = focusEl.value.length;
+        } else {
+          const sel = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(focusEl);
+          range.collapse(false);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+        mount.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    });
+  }
+
+  function insertNewItemAt(afterLineIdx, prefixStr = '- ') {
+    flushActiveInlineEditor();
+    const lines = state.md.split(/\r?\n/);
+    const insertIdx = Math.min(lines.length, afterLineIdx + 1);
+    lines.splice(insertIdx, 0, prefixStr);
+    commitMdChange(lines.join('\n'));
+    openBlockEditor(insertIdx, insertIdx, { isNew: true, skipFlush: true });
+  }
+
+  function buildInlineEditorDom(editState) {
+    const { lineIdx, endLineIdx } = editState;
+    const allLines = state.md.split(/\r?\n/);
+    const sliceLines = allLines.slice(lineIdx, endLineIdx + 1);
+    const isMulti = endLineIdx > lineIdx;
+    const rawInitial = sliceLines.join('\n');
+    const split = isMulti ? { prefix: '', badge: `Lines ${lineIdx + 1}–${endLineIdx + 1}`, body: rawInitial } : splitBlockPrefix(rawInitial);
+
+    let curMode = isMulti ? 'raw' : editState.mode;
+    let workingRaw = rawInitial;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'inline-editor';
+    wrap.addEventListener('click', (e) => e.stopPropagation());
+
+    const syncDraftFromDom = () => {
+      if (curMode === 'rich') {
+        const richEl = wrap.querySelector('.ie-rich');
+        if (richEl) workingRaw = split.prefix + richDomToMdInline(richEl);
+      } else {
+        const rawEl = wrap.querySelector('.ie-raw');
+        if (rawEl) workingRaw = rawEl.value;
+      }
+    };
+
+    const saveCurrent = (silent = false) => {
+      activeEditorSaveFn = null;
+      syncDraftFromDom();
+      const updatedLines = state.md.split(/\r?\n/);
+      const replacement = workingRaw.split(/\r?\n/);
+      if (editState.isNew && replacement.length === 1 && replacement[0].trim() === split.prefix.trim()) {
+        updatedLines.splice(lineIdx, 1);
+        state.activeEdit = null;
+        commitMdChange(updatedLines.join('\n'));
+        if (!silent) render();
+        return;
+      }
+      const changed = workingRaw !== rawInitial;
+      updatedLines.splice(lineIdx, endLineIdx - lineIdx + 1, ...replacement);
+      state.activeEdit = null;
+      if (changed) commitMdChange(updatedLines.join('\n'), silent ? '' : 'Saved');
+      if (!silent) render();
+    };
+    activeEditorSaveFn = saveCurrent;
+
+    const cancelCurrent = () => {
+      activeEditorSaveFn = null;
+      if (editState.isNew && state.undoStack.length) {
+        undoLastEdit();
+        return;
+      }
+      state.activeEdit = null;
+      render();
+    };
+
+    const paint = () => {
+      const curSplit = isMulti ? split : splitBlockPrefix(workingRaw);
+      split.prefix = curSplit.prefix;
+      split.badge = curSplit.badge;
+      split.body = curSplit.body;
+
+      wrap.innerHTML = `
+        <div class="ie-top">
+          <div class="ie-tools">
+            <span class="ie-badge">${escapeHtml(split.badge)}</span>
+            ${curMode === 'rich' ? `
+              <button type="button" class="ie-tool" data-cmd="bold" title="Bold"><strong>B</strong></button>
+              <button type="button" class="ie-tool" data-cmd="code" title="Code token"><code>Code</code></button>
+              <button type="button" class="ie-tool" data-cmd="link" title="Insert or edit link">Link</button>
+              <button type="button" class="ie-tool" data-cmd="star" title="Toggle ★ priority">★</button>
+            ` : ''}
+          </div>
+          ${!isMulti ? `
+            <div class="ie-mode-seg">
+              <button type="button" class="ie-mode-btn${curMode === 'rich' ? ' active' : ''}" data-mode="rich">Visual</button>
+              <button type="button" class="ie-mode-btn${curMode === 'raw' ? ' active' : ''}" data-mode="raw">Raw MD</button>
+            </div>
+          ` : ''}
+        </div>
+        <div class="ie-link-bar" id="ieLinkBar">
+          <input type="url" class="ie-link-input" id="ieLinkInput" placeholder="https://...">
+          <button type="button" class="ie-tool" id="ieLinkApply">Apply</button>
+          <button type="button" class="ie-tool" id="ieLinkOpen">Open ↗</button>
+          <button type="button" class="ie-tool ie-danger" id="ieLinkRemove">Unlink</button>
+        </div>
+        ${curMode === 'rich'
+          ? `<div class="ie-rich" contenteditable="true" spellcheck="false">${mdInlineToRichHtml(split.body)}</div>`
+          : `<textarea class="ie-raw" spellcheck="false"></textarea>`}
+        <div class="ie-foot">
+          <div class="ie-tools">
+            <button type="button" class="btn solid" data-act="save">Save</button>
+            <button type="button" class="btn" data-act="cancel">Cancel</button>
+          </div>
+          ${!isMulti && !/^#{1,3}\s+/.test(workingRaw) ? `
+            <div class="ie-tools">
+              <button type="button" class="ie-tool" data-act="up" title="Move up">↑</button>
+              <button type="button" class="ie-tool" data-act="down" title="Move down">↓</button>
+              <button type="button" class="ie-tool" data-act="add-below" title="Add item below">+ Below</button>
+              <button type="button" class="ie-tool ie-danger" data-act="delete" title="Delete line">Delete</button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+
+      const richEl = wrap.querySelector('.ie-rich');
+      const rawEl = wrap.querySelector('.ie-raw');
+      if (rawEl) {
+        rawEl.value = workingRaw;
+        rawEl.style.height = Math.max(82, Math.min(340, rawEl.scrollHeight + 8)) + 'px';
+      }
+
+      let activeLinkEl = null;
+      let savedRange = null;
+      const linkBar = wrap.querySelector('#ieLinkBar');
+      const linkInput = wrap.querySelector('#ieLinkInput');
+
+      const updateLinkInspector = () => {
+        if (!richEl) return;
+        const sel = window.getSelection();
+        if (!sel || !sel.rangeCount) return;
+        const node = sel.anchorNode;
+        if (!node || !richEl.contains(node)) return;
+        savedRange = sel.getRangeAt(0).cloneRange();
+        const el = (node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement)?.closest('a.ce-link');
+        if (el && richEl.contains(el)) {
+          activeLinkEl = el;
+          linkInput.value = el.getAttribute('data-href') || el.getAttribute('href') || '';
+          linkBar.classList.add('show');
+        } else {
+          activeLinkEl = null;
+          linkBar.classList.remove('show');
+        }
+      };
+
+      if (richEl) {
+        richEl.addEventListener('keyup', updateLinkInspector);
+        richEl.addEventListener('mouseup', updateLinkInspector);
+        richEl.addEventListener('touchend', () => setTimeout(updateLinkInspector, 30));
+        richEl.addEventListener('keydown', (e) => {
+          if (e.isComposing || e.keyCode === 229) return;
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            if (e.metaKey || e.ctrlKey) saveCurrent();
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            cancelCurrent();
+          }
+        });
+      }
+      if (rawEl) {
+        rawEl.addEventListener('keydown', (e) => {
+          if (e.isComposing || e.keyCode === 229) return;
+          if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+            saveCurrent();
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            cancelCurrent();
+          }
+        });
+      }
+
+      wrap.querySelectorAll('.ie-mode-btn').forEach((b) => {
+        b.onclick = () => {
+          const nextMode = b.dataset.mode;
+          if (nextMode === curMode) return;
+          syncDraftFromDom();
+          curMode = nextMode;
+          editState.mode = nextMode;
+          paint();
+        };
+      });
+
+      wrap.querySelectorAll('[data-cmd]').forEach((btn) => {
+        btn.onmousedown = (e) => e.preventDefault();
+        btn.onclick = () => {
+          if (!richEl) return;
+          richEl.focus();
+          const cmd = btn.dataset.cmd;
+          if (cmd === 'bold') {
+            document.execCommand('bold', false, null);
+          } else if (cmd === 'star') {
+            const curTxt = richEl.textContent || '';
+            if (curTxt.includes('★')) {
+              const walker = document.createTreeWalker(richEl, NodeFilter.SHOW_TEXT);
+              let n;
+              while ((n = walker.nextNode())) {
+                if (n.nodeValue.includes('★')) n.nodeValue = n.nodeValue.replace(/★/g, '');
+              }
+            } else {
+              document.execCommand('insertText', false, '★');
+            }
+          } else if (cmd === 'code') {
+            const sel = window.getSelection();
+            if (!sel || !sel.rangeCount) return;
+            const range = sel.getRangeAt(0);
+            const codeAnc = (sel.anchorNode?.nodeType === 1 ? sel.anchorNode : sel.anchorNode?.parentElement)?.closest('code.ce-code');
+            if (codeAnc && richEl.contains(codeAnc)) {
+              const txtNode = document.createTextNode(codeAnc.textContent);
+              codeAnc.replaceWith(txtNode);
+            } else if (!range.collapsed) {
+              const codeEl = document.createElement('code');
+              codeEl.className = 'ce-code';
+              codeEl.textContent = range.toString();
+              range.deleteContents();
+              range.insertNode(codeEl);
+              richEl.appendChild(document.createTextNode('\u200B'));
+            }
+          } else if (cmd === 'link') {
+            if (activeLinkEl) {
+              linkBar.classList.add('show');
+              linkInput.focus();
+              return;
+            }
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount) savedRange = sel.getRangeAt(0).cloneRange();
+            linkInput.value = 'https://';
+            linkBar.classList.add('show');
+            linkInput.focus();
+            linkInput.select();
+          }
+        };
+      });
+
+      wrap.querySelector('#ieLinkApply').onclick = () => {
+        const url = linkInput.value.trim();
+        if (!url) return;
+        if (activeLinkEl) {
+          activeLinkEl.setAttribute('data-href', url);
+          activeLinkEl.setAttribute('href', url);
+          showToast('Updated link');
+          return;
+        }
+        if (richEl && savedRange) {
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(savedRange);
+          const label = savedRange.toString() || url.replace(/^https?:\/\//, '').split('/')[0];
+          const a = document.createElement('a');
+          a.className = 'ce-link';
+          a.setAttribute('href', url);
+          a.setAttribute('data-href', url);
+          a.textContent = label;
+          savedRange.deleteContents();
+          savedRange.insertNode(a);
+          activeLinkEl = a;
+        }
+      };
+      wrap.querySelector('#ieLinkOpen').onclick = () => {
+        const url = linkInput.value.trim();
+        if (url) window.open(url, '_blank', 'noopener');
+      };
+      wrap.querySelector('#ieLinkRemove').onclick = () => {
+        if (activeLinkEl) {
+          const txt = document.createTextNode(activeLinkEl.textContent);
+          activeLinkEl.replaceWith(txt);
+          activeLinkEl = null;
+          linkBar.classList.remove('show');
+        } else {
+          linkBar.classList.remove('show');
+        }
+      };
+
+      wrap.querySelector('[data-act="save"]').onclick = () => saveCurrent(false);
+      wrap.querySelector('[data-act="cancel"]').onclick = cancelCurrent;
+
+      const upBtn = wrap.querySelector('[data-act="up"]');
+      if (upBtn) {
+        upBtn.onclick = () => {
+          syncDraftFromDom();
+          const { lines, minIdx } = findSiblingBounds(lineIdx);
+          lines[lineIdx] = workingRaw;
+          let prev = lineIdx - 1;
+          while (prev >= minIdx && !lines[prev].trim()) prev--;
+          if (prev < minIdx) { showToast('Already at top'); return; }
+          const tmp = lines[prev];
+          lines[prev] = lines[lineIdx];
+          lines[lineIdx] = tmp;
+          commitMdChange(lines.join('\n'), 'Moved up');
+          activeEditorSaveFn = null;
+          openBlockEditor(prev, prev, { raw: curMode === 'raw', skipFlush: true });
+        };
+      }
+      const downBtn = wrap.querySelector('[data-act="down"]');
+      if (downBtn) {
+        downBtn.onclick = () => {
+          syncDraftFromDom();
+          const { lines, maxIdx } = findSiblingBounds(lineIdx);
+          lines[lineIdx] = workingRaw;
+          let next = lineIdx + 1;
+          while (next <= maxIdx && !lines[next].trim()) next++;
+          if (next > maxIdx) { showToast('Already at bottom'); return; }
+          const tmp = lines[next];
+          lines[next] = lines[lineIdx];
+          lines[lineIdx] = tmp;
+          commitMdChange(lines.join('\n'), 'Moved down');
+          activeEditorSaveFn = null;
+          openBlockEditor(next, next, { raw: curMode === 'raw', skipFlush: true });
+        };
+      }
+      const addBelowBtn = wrap.querySelector('[data-act="add-below"]');
+      if (addBelowBtn) {
+        addBelowBtn.onclick = () => {
+          syncDraftFromDom();
+          const lines = state.md.split(/\r?\n/);
+          lines[lineIdx] = workingRaw;
+          const nextPrefix = /^\s*-\s+\[/.test(workingRaw) ? '- [ ] ' : (split.prefix.startsWith('>') ? '> ' : '- ');
+          lines.splice(lineIdx + 1, 0, nextPrefix);
+          commitMdChange(lines.join('\n'));
+          activeEditorSaveFn = null;
+          openBlockEditor(lineIdx + 1, lineIdx + 1, { isNew: true, skipFlush: true });
+        };
+      }
+      const delBtn = wrap.querySelector('[data-act="delete"]');
+      if (delBtn) {
+        delBtn.onclick = () => {
+          const lines = state.md.split(/\r?\n/);
+          lines.splice(lineIdx, 1);
+          state.activeEdit = null;
+          commitMdChange(lines.join('\n'), 'Deleted (tap Undo to restore)');
+          render();
+        };
+      }
+    };
+
+    paint();
+    return wrap;
+  }
+
+  let activeEditorSaveFn = null;
+  function flushActiveInlineEditor() {
+    if (state.activeEdit && typeof activeEditorSaveFn === 'function') {
+      const fn = activeEditorSaveFn;
+      activeEditorSaveFn = null;
+      fn(true);
+    }
+  }
+
+  function mountActiveInlineEditor() {
+    activeEditorSaveFn = null;
+    if (!state.activeEdit) return;
+    const mount = document.querySelector(`[data-editor-mount="${state.activeEdit.lineIdx}"]`);
+    if (mount) {
+      mount.replaceWith(buildInlineEditorDom(state.activeEdit));
+    }
+  }
+
+  function findSec(parsed, prefix) {
+    return parsed.sections.find((s) => s.title === prefix || s.title.startsWith(prefix)) || null;
+  }
+
+  function closeModal() {
+    document.getElementById('modalBackdrop').classList.remove('open');
+    document.getElementById('modalBody').innerHTML = '';
+  }
+  document.getElementById('modalBackdrop').addEventListener('click', (e) => {
+    if (e.target.id === 'modalBackdrop') closeModal();
+  });
+
+  function registerPdfBlobUrl(fname, blob, ns = activeTripNamespace()) {
+    const key = idbPdfKey(fname, ns);
+    if (pdfBlobUrlMap.has(key)) return pdfBlobUrlMap.get(key);
+    const pdfBlob = blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' });
+    const url = URL.createObjectURL(pdfBlob);
+    pdfBlobUrlMap.set(key, url);
+    document.querySelectorAll('.pdf-trigger').forEach((el) => {
+      if (el.dataset.pdf === fname && activeTripNamespace() === ns) {
+        el.setAttribute('href', url);
+      }
+    });
+    return url;
+  }
+
+  async function hydrateAllPdfLinks(md = state.md, ns = activeTripNamespace()) {
+    for (const fname of getReferencedPdfs(md)) {
+      const key = idbPdfKey(fname, ns);
+      if (pdfBlobUrlMap.has(key)) continue;
+      let blob = await idbGet(key);
+      if (!blob) blob = getEmbeddedPdfBlob(fname);
+      if (blob) registerPdfBlobUrl(fname, blob, ns);
+    }
+  }
+
+  async function openPdfInNewTab(fname, fallbackHref) {
+    const ns = activeTripNamespace();
+    const key = idbPdfKey(fname, ns);
+    const rawB64 = embeddedBundle?.pdfs?.[fname];
+    if (location.origin === 'null' && rawB64) {
+      const a = document.createElement('a');
+      a.href = 'data:application/pdf;base64,' + rawB64;
+      a.download = fname;
+      a.click();
+      return;
+    }
+    const existingUrl = pdfBlobUrlMap.get(key);
+    if (existingUrl) {
+      window.open(existingUrl, '_blank');
+      return;
+    }
+    // Open tab synchronously inside user gesture so mobile popup blockers never block it
+    const win = window.open('about:blank', '_blank');
+    let blob = await idbGet(key);
+    if (!blob) {
+      blob = getEmbeddedPdfBlob(fname);
+      if (blob) idbPut(key, blob);
+    }
+    if (!blob && location.protocol.startsWith('http')) {
+      const cfg = getGhCfg();
+      if (cfg.repo && cfg.token) {
+        try {
+          const branch = cfg.branch || 'main';
+          const pfx = ghTripPrefix(cfg);
+          const pRes = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${pfx}attachments/${encodeURIComponent(fname)}?ref=${encodeURIComponent(branch)}`, {
+            headers: { 'Accept': 'application/vnd.github.raw+json', 'Authorization': `Bearer ${cfg.token}` }
+          });
+          if (pRes.ok) {
+            blob = new Blob([await pRes.blob()], { type: 'application/pdf' });
+            await idbPut(key, blob);
+          }
+        } catch (_) {}
+      }
+      if (!blob) {
+        try {
+          const res = await fetch(fallbackHref);
+          if (res.ok) {
+            blob = new Blob([await res.blob()], { type: 'application/pdf' });
+            await idbPut(key, blob);
+          }
+        } catch (_) {}
+      }
+    }
+    if (blob) {
+      const blobUrl = registerPdfBlobUrl(fname, blob, ns);
+      if (win) win.location.replace(blobUrl);
+      else window.open(blobUrl, '_blank');
+    } else {
+      if (win) win.location.replace(fallbackHref);
+      else window.open(fallbackHref, '_blank');
+    }
+  }
+
+  function extractDateShort(title) {
+    const mIso = title.match(/^\d{4}-(\d{2})-(\d{2})/);
+    if (mIso) return `${Number(mIso[1])}/${Number(mIso[2])}`;
+    const mSlash = title.match(/^(\d{1,2}[/.]\d{1,2}(?:[–-]\d{1,2}(?:[/.]\d{1,2})?)?)/);
+    if (mSlash) return mSlash[1].replace(/\./g, '/');
+    const mMon = title.match(/^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:[–-]\d{1,2})?)/i);
+    if (mMon) return mMon[1];
+    const mDay = title.match(/^(Day\s+\d+|D\d+)/i);
+    return mDay ? mDay[1] : '';
+  }
+
+  function formatDatePad(s) {
+    const mRange = s.match(/^(\d+)\/(\d+)([–-])(\d+)$/);
+    if (mRange) return `${mRange[1].padStart(2, '0')}.${mRange[2].padStart(2, '0')}${mRange[3]}${mRange[4].padStart(2, '0')}`;
+    const m = s.match(/^(\d+)\/(\d+)/);
+    return m ? `${m[1].padStart(2, '0')}.${m[2].padStart(2, '0')}` : s;
+  }
+
+  function parseTimelineBullet(rawBullet) {
+    const body = rawBullet.replace(/^[-*]\s+/, '').trim();
+    let timeLabel = '·';
+    let rest = body;
+    const mTime = body.match(/^(?:约\s*|~\s*)?(\d{1,2}:\d{2}(?:[–-]\d{1,2}:\d{2})?)\s*(?:AM|PM|am|pm)?\s*(?:起|前|前后)?\s*(.*)$/);
+    const mOpt = body.match(/^(?:可选|Optional)[：:]\s*(.*)$/i);
+    const mStep = body.match(/^([①②③④⑤⑥])\s*(.*)$/);
+    if (mTime) {
+      timeLabel = ((body.startsWith('约') || body.startsWith('~')) ? '~' : '') + mTime[1].split(/[–-]/)[0];
+      rest = body.replace(/^(?:约\s*|~\s*)?\d{1,2}:\d{2}(?:[–-]\d{1,2}:\d{2})?\s*(?:AM|PM|am|pm)?\s*/, '') || body;
+    } else if (mOpt) {
+      timeLabel = 'Opt';
+      rest = mOpt[1];
+    } else if (mStep) {
+      timeLabel = mStep[1];
+      rest = mStep[2];
+    }
+    return { timeLabel, rest, isStar: body.includes('★') };
+  }
+
+  function matchesQuery(text) {
+    return !state.query || text.toLowerCase().includes(state.query.toLowerCase());
+  }
+
+  function renderItineraryTab(main, parsed) {
+    const sec = findItinerarySec(parsed);
+    if (!sec) return;
+
+    sec.h3s.forEach((d, dayOrderIdx) => {
+      const blob = d.title + '\n' + d.lines.join('\n');
+      if (!matchesQuery(blob)) return;
+
+      const parts = d.title.split(/[·|]/).map((s) => s.trim());
+      const dateRaw = parts[0] || '';
+      const dateShort = extractDateShort(dateRaw);
+      const dow = dateShort ? dateRaw.slice(dateRaw.indexOf(dateShort.split('/')[0])).replace(/^[^\s]+\s*/, '').trim() : '';
+      const headline = parts.slice(1).join(' · ') || d.title;
+
+      let routeObj = null;
+      const passes = [];
+      const activities = [];
+
+      d.items.forEach(({ idx, line }) => {
+        const t = line.trim();
+        if (!t) return;
+        let m;
+        if ((m = t.match(/^-\s+\*\*(?:路线[^*]*|Route[^*]*|Drive[^*]*)[：:]\*\*\s*(.*)$/i))) {
+          routeObj = { idx, body: m[1] };
+        } else if ((m = t.match(/^-\s+\*\*(?:航班(?:通行证)?|Flight)[：:]\*\*\s*(.*)$/i))) {
+          passes.push({ idx, kind: 'Flight', body: m[1] });
+        } else if ((m = t.match(/^-\s+\*\*(?:火车(?:通行证)?|高铁(?:通行证)?|Train|Rail)[：:]\*\*\s*(.*)$/i))) {
+          passes.push({ idx, kind: 'Train', body: m[1] });
+        } else if ((m = t.match(/^-\s+\*\*(?:渡轮(?:通行证)?|船票(?:通行证)?|Ferry|Cruise)[：:]\*\*\s*(.*)$/i))) {
+          passes.push({ idx, kind: 'Ferry', body: m[1] });
+        } else if ((m = t.match(/^-\s+\*\*(?:乘客|Passenger|Traveler|Pax)\s*[·•:-]?\s*([^*]+?)[：:]\*\*\s*(.*)$/i))) {
+          const rawName = m[1].trim();
+          const given = (rawName.includes('/') ? rawName.split('/')[1] : rawName.split(/\s+/)[0] || '').split('(')[0].trim();
+          const shortKind = given ? (given[0].toUpperCase() + given.slice(1).toLowerCase()) : 'Pax';
+          passes.push({ idx, kind: shortKind, body: `**${rawName}** · ` + m[2].trim() });
+        } else if ((m = t.match(/^-\s+\*\*(?:租车(?:通行证)?|Car|Rental)[：:]\*\*\s*(.*)$/i))) {
+          passes.push({ idx, kind: 'Car', body: m[1] });
+        } else if ((m = t.match(/^-\s+\*\*(?:住宿(?:通行证)?|酒店(?:通行证)?|Stay|Hotel|Lodging)[：:]\*\*\s*(.*)$/i))) {
+          passes.push({ idx, kind: 'Stay', body: m[1] });
+        } else if ((m = t.match(/^-\s+\*\*(?:门票(?:通行证)?|通行证|Pass|Ticket)[：:]\*\*\s*(.*)$/i))) {
+          passes.push({ idx, kind: 'Pass', body: m[1] });
+        } else if (!t.startsWith('- **住：**')) {
+          activities.push({ idx, text: t });
+        }
+      });
+
+      const routeLine = routeObj ? routeObj.body : '';
+      const isFlightOnly = !routeLine && !activities.length && passes.some((p) => p.kind === 'Flight' || p.kind === 'Train');
+      const driveMatch = stripMdInline(routeLine).match(/(?:(?:驾驶|再开|往返驾驶)约\s*([^；，（(·]+)|(?:drive|driving)\s*:?\s*~?\s*([^;,(·]+))/i);
+      const driveStr = driveMatch ? (driveMatch[1] || driveMatch[2] || '').trim() : '';
+
+      let metaParts = [];
+      if (isFlightOnly) {
+        const flBody = stripMdInline(passes.find((p) => p.kind === 'Flight' || p.kind === 'Train')?.body || '');
+        const segs = flBody.split('·').map((s) => s.trim());
+        metaParts = [segs[0], (segs[1] || '').replace(/（[^）]*）/g, '').trim()].filter(Boolean);
+      } else {
+        const stayObj = passes.find((p) => p.kind === 'Stay');
+        const stayShort = stayObj ? stripMdInline(stayObj.body.split('·')[0]).replace(/（[^）]*）/g, '').trim() : '';
+        metaParts = [stayShort, driveStr].filter(Boolean);
+      }
+
+      const dayKey = dateShort || String(dayOrderIdx);
+      const hasActiveInside = state.activeEdit && state.activeEdit.lineIdx >= d.lineIdx && state.activeEdit.lineIdx <= d.lastContentIdx;
+      const isOpen = state.allExpanded || !!state.query || state.openDays.has(dayKey) || !!hasActiveInside;
+      const card = document.createElement('div');
+      card.className = 'day-card' + (isOpen ? ' open' : '');
+
+      const isSectionEditing = state.activeEdit && state.activeEdit.lineIdx === d.lineIdx && state.activeEdit.endLineIdx > d.lineIdx;
+      const isHeadingEditing = state.activeEdit && state.activeEdit.lineIdx === d.lineIdx && state.activeEdit.endLineIdx === d.lineIdx;
+
+      const routeHtml = routeObj
+        ? (state.activeEdit && state.activeEdit.lineIdx === routeObj.idx && state.activeEdit.endLineIdx === routeObj.idx
+            ? `<div data-editor-mount="${routeObj.idx}"></div>`
+            : `<div class="route-line editable-block" data-edit-line="${routeObj.idx}">${renderInline(routeLine.replace(/^\*\*[^*]+\*\*\s*/, ''))}</div>`)
+        : '';
+
+      const passHtml = passes.length
+        ? `<div class="pass-stack" style="${isFlightOnly ? 'margin:12px 0 0' : ''}">${passes.map((p) => {
+            if (state.activeEdit && state.activeEdit.lineIdx === p.idx && state.activeEdit.endLineIdx === p.idx) {
+              return `<div data-editor-mount="${p.idx}"></div>`;
+            }
+            return `
+              <div class="pass-row editable-block" data-edit-line="${p.idx}">
+                <span class="pass-kind">${escapeHtml(p.kind)}</span>
+                <div class="pass-text">${renderInline(p.body, true)}</div>
+              </div>
+            `;
+          }).join('')}</div>`
+        : '';
+
+      const tlHtml = activities.length
+        ? `<ul class="tl">${activities.map((act) => {
+            if (state.activeEdit && state.activeEdit.lineIdx === act.idx && state.activeEdit.endLineIdx === act.idx) {
+              return `<li><div data-editor-mount="${act.idx}"></div></li>`;
+            }
+            const pa = parseTimelineBullet(act.text);
+            return `
+              <li class="tl-row${pa.isStar ? ' is-star' : ''}">
+                <span class="tl-t">${escapeHtml(pa.timeLabel)}</span>
+                <span class="tl-rail"><span class="tl-node"></span></span>
+                <div class="tl-body editable-block" data-edit-line="${act.idx}">${renderInline(pa.rest, true)}</div>
+              </li>
+            `;
+          }).join('')}</ul>`
+        : '';
+
+      const editBarHtml = state.editMode && !isSectionEditing
+        ? `<div class="card-edit-bar">
+             <button type="button" class="ghost-btn" data-add-at="${d.lastContentIdx}" data-add-prefix="- ">+ Add item</button>
+             <div style="display:flex;gap:6px">
+               <button type="button" class="ghost-btn" data-edit-line="${d.lineIdx}">Edit title</button>
+               <button type="button" class="ghost-btn" data-edit-range="${d.lineIdx}:${d.lastContentIdx}">Section MD</button>
+             </div>
+           </div>`
+        : '';
+
+      card.innerHTML = `
+        <div class="day-head">
+          <div class="date-col">
+            <span class="date-num">${escapeHtml(formatDatePad(dateShort))}</span>
+            <span class="date-sub">${escapeHtml(dow)}</span>
+          </div>
+          <div class="title-col">
+            <h3 class="day-title">${escapeHtml(headline)}</h3>
+            ${metaParts.length ? `<div class="day-meta">${escapeHtml(metaParts.join(' · '))}</div>` : ''}
+          </div>
+          <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+        <div class="day-body">
+          ${isSectionEditing ? `<div data-editor-mount="${d.lineIdx}"></div>` : `
+            ${isHeadingEditing ? `<div data-editor-mount="${d.lineIdx}"></div>` : ''}
+            ${routeHtml}
+            ${passHtml}
+            ${tlHtml}
+            ${editBarHtml}
+          `}
+        </div>
+      `;
+      card.querySelector('.day-head').onclick = () => {
+        const nowOpen = card.classList.toggle('open');
+        if (nowOpen) state.openDays.add(dayKey);
+        else state.openDays.delete(dayKey);
+      };
+      main.appendChild(card);
+    });
+  }
+
+  function toggleTaskLine(lineIdx, checked) {
+    const lines = state.md.split(/\r?\n/);
+    if (lines[lineIdx] !== undefined) {
+      lines[lineIdx] = lines[lineIdx].replace(/^(\s*-\s+\[)[ xX](\])/, `$1${checked ? 'x' : ' '}$2`);
+      commitMdChange(lines.join('\n'));
+      render();
+    }
+  }
+
+  function removeCheckedTasks() {
+    const lines = state.md.split(/\r?\n/).filter((l) => !/^\s*-\s+\[[xX]\]\s+/.test(l));
+    commitMdChange(lines.join('\n'), 'Removed done items');
+    render();
+  }
+
+  function renderTasksTab(main, parsed) {
+    const taskSecs = findTaskSections(parsed);
+    if (!taskSecs.length) return;
+
+    taskSecs.forEach((sec) => sec.h3s.forEach((group) => {
+      const visible = group.tasks.filter((t) => matchesQuery(t.text) || matchesQuery(group.title));
+      if (!visible.length && !state.editMode) return;
+
+      const isSectionEditing = state.activeEdit && state.activeEdit.lineIdx === group.lineIdx && state.activeEdit.endLineIdx > group.lineIdx;
+      const card = document.createElement('div');
+      card.className = 'section-card';
+      card.innerHTML = `<div class="section-head"><h3>${escapeHtml(group.title)}</h3></div>`;
+
+      if (isSectionEditing) {
+        const mountWrap = document.createElement('div');
+        mountWrap.style.padding = '4px 12px';
+        mountWrap.innerHTML = `<div data-editor-mount="${group.lineIdx}"></div>`;
+        card.appendChild(mountWrap);
+        main.appendChild(card);
+        return;
+      }
+
+      const list = document.createElement('div');
+      visible.forEach((t) => {
+        if (state.activeEdit && state.activeEdit.lineIdx === t.lineIdx && state.activeEdit.endLineIdx === t.lineIdx) {
+          const mountWrap = document.createElement('div');
+          mountWrap.style.padding = '4px 12px';
+          mountWrap.innerHTML = `<div data-editor-mount="${t.lineIdx}"></div>`;
+          list.appendChild(mountWrap);
+          return;
+        }
+        const row = document.createElement('div');
+        row.className = 'task-row' + (t.checked ? ' done' : '');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = t.checked;
+        cb.onchange = () => toggleTaskLine(t.lineIdx, cb.checked);
+        const txt = document.createElement('div');
+        txt.className = 'task-text editable-block';
+        txt.setAttribute('data-edit-line', String(t.lineIdx));
+        txt.innerHTML = renderInline(t.text, true);
+        row.appendChild(cb);
+        row.appendChild(txt);
+        list.appendChild(row);
+      });
+      card.appendChild(list);
+      if (state.editMode) {
+        const bar = document.createElement('div');
+        bar.className = 'card-edit-bar';
+        bar.innerHTML = `
+          <button type="button" class="ghost-btn" data-add-at="${group.lastContentIdx}" data-add-prefix="- [ ] ">+ Add task</button>
+          <button type="button" class="ghost-btn" data-edit-range="${group.lineIdx}:${group.lastContentIdx}">Section MD</button>
+        `;
+        card.appendChild(bar);
+      }
+      main.appendChild(card);
+    }));
+  }
+
+  function renderNotesTab(main, parsed) {
+    const itinSec = findItinerarySec(parsed);
+    const taskSet = new Set(findTaskSections(parsed));
+    if (parsed.heroLines.length) {
+      const heroFiltered = state.query ? parsed.heroLines.filter((r) => matchesQuery(r.line)) : parsed.heroLines;
+      if (heroFiltered.length) {
+        const hasCjk = /[\u4e00-\u9fff]/.test(parsed.docTitle || heroFiltered[0].line);
+        const card = document.createElement('div');
+        card.className = 'section-card';
+        card.innerHTML = `
+          <div class="section-head"><h3>${hasCjk ? '路线总览' : 'Overview'}</h3></div>
+          ${renderMarkdownLines(heroFiltered)}
+        `;
+        main.appendChild(card);
+      }
+    }
+
+    parsed.sections.forEach((sec) => {
+      if (sec === itinSec || taskSet.has(sec)) return;
+      const filtered = state.query
+        ? sec.rawLines.filter((r) => matchesQuery(r.line) || matchesQuery(sec.title))
+        : sec.rawLines;
+      if (!filtered.length && !state.editMode) return;
+
+      const isSectionEditing = state.activeEdit && state.activeEdit.lineIdx === sec.lineIdx && state.activeEdit.endLineIdx > sec.lineIdx;
+      const card = document.createElement('div');
+      card.className = 'section-card';
+      card.innerHTML = `
+        <div class="section-head"><h3>${escapeHtml(sec.title)}</h3></div>
+        ${isSectionEditing
+          ? `<div style="padding:4px 12px"><div data-editor-mount="${sec.lineIdx}"></div></div>`
+          : renderMarkdownLines(filtered)}
+        ${state.editMode && !isSectionEditing ? `
+          <div class="card-edit-bar">
+            <button type="button" class="ghost-btn" data-add-at="${sec.lastContentIdx}" data-add-prefix="- ">+ Add note</button>
+            <button type="button" class="ghost-btn" data-edit-range="${sec.lineIdx}:${sec.lastContentIdx}">Section MD</button>
+          </div>
+        ` : ''}
+      `;
+      main.appendChild(card);
+    });
+  }
+
+  async function discoverRepoTrips(cfg = getGhCfg()) {
+    if (!cfg.repo) return [];
+    const branch = cfg.branch || 'main';
+    const headers = { 'Accept': 'application/vnd.github+json' };
+    if (cfg.token) headers['Authorization'] = `Bearer ${cfg.token}`;
+    const res = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/?ref=${encodeURIComponent(branch)}`, { headers, cache: 'no-store' });
+    if (!res.ok) return cfg.knownTrips || [];
+    const entries = await res.json();
+    if (!Array.isArray(entries)) return cfg.knownTrips || [];
+    const dirs = entries
+      .filter((e) => e.type === 'dir' && !e.name.startsWith('.') && e.name !== 'attachments')
+      .map((e) => e.name)
+      .sort();
+    const updated = { ...cfg, knownTrips: dirs };
+    if (!updated.trip && dirs.length === 1) updated.trip = dirs[0];
+    saveGhCfg(updated);
+    return dirs;
+  }
+
+  async function switchActiveTrip(newTrip) {
+    flushActiveInlineEditor();
+    const cfg = getGhCfg();
+    cfg.trip = (newTrip || '').trim();
+    saveGhCfg(cfg);
+    state.openDays.clear();
+    state.undoStack = [];
+    updateUndoButton();
+    const ns = activeTripNamespace();
+    const cachedMd = lsGet(keyMd(ns)) || (await idbGet(idbMdKey(ns))) || '';
+    state.md = cachedMd;
+    state.dirty = lsGet(keyDirty(ns)) === '1';
+    state.sha = lsGet(keySha(ns)) || '';
+    state.parsed = parsePlan(state.md);
+    updateDirtyIndicator();
+    render();
+    if (!state.dirty && cfg.repo && navigator.onLine !== false) {
+      await pullFromGitHub(true);
+    }
+  }
+
+  async function pullFromGitHub(silent = false) {
+    const cfg = getGhCfg();
+    if (!cfg.repo) { if (!silent) showToast('Enter owner/repo first'); return; }
+    if (!silent && state.dirty && !confirm('Overwrite local edits with GitHub copy?')) return;
+    try {
+      if (!silent) showToast('Pulling...');
+      if (!cfg.trip) {
+        await discoverRepoTrips(cfg);
+      }
+      const curCfg = getGhCfg();
+      const branch = curCfg.branch || 'main';
+      const pfx = ghTripPrefix(curCfg);
+      const ns = activeTripNamespace();
+      const headers = { 'Accept': 'application/vnd.github+json' };
+      if (curCfg.token) headers['Authorization'] = `Bearer ${curCfg.token}`;
+      const res = await fetch(`https://api.github.com/repos/${curCfg.repo}/contents/${pfx}plan.md?ref=${encodeURIComponent(branch)}`, { headers, cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!silent || !state.md || (data.sha && data.sha !== state.sha)) {
+        const bytes = Uint8Array.from(atob(data.content.replace(/\s/g, '')), (c) => c.charCodeAt(0));
+        const md = new TextDecoder('utf-8').decode(bytes);
+        state.md = md;
+        state.sha = data.sha || '';
+        state.dirty = false;
+        lsSet(keyMd(ns), md);
+        lsSet(keySha(ns), state.sha);
+        lsSet(keyDirty(ns), '0');
+        await idbPut(idbMdKey(ns), md);
+        state.parsed = parsePlan(md);
+        updateDirtyIndicator();
+        render();
+      }
+
+      const pdfList = getReferencedPdfs(state.md);
+      const rawHeaders = { 'Accept': 'application/vnd.github.raw+json' };
+      if (curCfg.token) rawHeaders['Authorization'] = `Bearer ${curCfg.token}`;
+      const queue = [...pdfList];
+      await Promise.all(Array.from({ length: 4 }, async () => {
+        while (queue.length) {
+          const fname = queue.shift();
+          if (silent && (await idbGet(idbPdfKey(fname, ns)))) continue;
+          try {
+            const pRes = await fetch(`https://api.github.com/repos/${curCfg.repo}/contents/${pfx}attachments/${encodeURIComponent(fname)}?ref=${encodeURIComponent(branch)}`, { headers: rawHeaders });
+            if (pRes.ok) { const pb = new Blob([await pRes.blob()], { type: 'application/pdf' }); await idbPut(idbPdfKey(fname, ns), pb); registerPdfBlobUrl(fname, pb, ns); }
+          } catch (_) {}
+        }
+      }));
+
+      if (!silent) showToast('Synced');
+    } catch (err) {
+      if (!silent) showToast('Pull failed: ' + err.message);
+    }
+  }
+
+  async function pushToGitHub() {
+    const cfg = getGhCfg();
+    if (!cfg.repo || !cfg.token) { showToast('Enter owner/repo & PAT first'); return; }
+    try {
+      showToast('Pushing...');
+      const branch = cfg.branch || 'main';
+      const pfx = ghTripPrefix(cfg);
+      const headers = {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': `Bearer ${cfg.token}`,
+        'Content-Type': 'application/json'
+      };
+      const headRes = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${pfx}plan.md?ref=${encodeURIComponent(branch)}`, { headers, cache: 'no-store' });
+      if (headRes.ok) {
+        const headData = await headRes.json();
+        if (state.sha && headData.sha && state.sha !== headData.sha) {
+          if (!confirm('Remote plan.md changed. Overwrite remote?')) return;
+        }
+        state.sha = headData.sha;
+      }
+      const bytes = new TextEncoder().encode(state.md);
+      let bin = '';
+      bytes.forEach((b) => { bin += String.fromCharCode(b); });
+      const msg = (document.getElementById('commitMsgInput')?.value || '').trim() || `Update ${pfx}plan.md`;
+      const putRes = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${pfx}plan.md`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ message: msg, content: btoa(bin), sha: state.sha || undefined, branch })
+      });
+      if (!putRes.ok) throw new Error(`HTTP ${putRes.status}`);
+      const putData = await putRes.json();
+      state.sha = putData.content?.sha || state.sha;
+      state.dirty = false;
+      lsSet(keySha(), state.sha);
+      lsSet(keyDirty(), '0');
+      state.parsed = parsePlan(state.md);
+      updateDirtyIndicator();
+      showToast('Pushed');
+    } catch (err) {
+      showToast('Push failed: ' + err.message);
+    }
+  }
+
+  async function blobToBase64(blob) {
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) {
+      bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    }
+    return btoa(bin);
+  }
+
+  async function exportStandaloneOfflineHtml() {
+    try {
+      showToast('Packing offline HTML...');
+      let shellHtml = '';
+      if (location.protocol.startsWith('http')) {
+        const res = await fetch('./index.html', { cache: 'no-cache' });
+        shellHtml = await res.text();
+      } else {
+        const clone = document.documentElement.cloneNode(true);
+        clone.removeAttribute('data-theme');
+        clone.querySelector('body')?.classList.remove('edit-mode');
+        const mainEl = clone.querySelector('#appMain');
+        if (mainEl) mainEl.innerHTML = '';
+        const oldEmbed = clone.querySelector('#EMBEDDED_BUNDLE');
+        if (oldEmbed) oldEmbed.remove();
+        shellHtml = '<!DOCTYPE html>\n' + clone.outerHTML;
+      }
+      const pdfs = {};
+      for (const fname of getReferencedPdfs(state.md)) {
+        let blob = await idbGet(idbPdfKey(fname)) || getEmbeddedPdfBlob(fname);
+        if (!blob && location.protocol.startsWith('http')) {
+          try {
+            const r = await fetch('./attachments/' + fname);
+            if (r.ok) blob = await r.blob();
+          } catch (_) {}
+        }
+        if (blob) pdfs[fname] = await blobToBase64(blob);
+      }
+      const payload = JSON.stringify({ md: state.md, pdfs }).replace(/<\/script/gi, '<\\/script');
+      const scriptTag = `<script id="EMBEDDED_BUNDLE" type="application/json">${payload}<\/script>\n`;
+      const finalHtml = shellHtml.replace('<script>', scriptTag + '<script>');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([finalHtml], { type: 'text/html;charset=utf-8' }));
+      const outName = `${activeTripNamespace() === 'default' ? 'travel-hub' : activeTripNamespace()}-offline.html`;
+      a.download = outName;
+      a.click();
+      showToast(`Exported ${outName}`);
+    } catch (err) {
+      showToast('Export failed: ' + err.message);
+    }
+  }
+
+  function renderSyncTab(main) {
+    const cfg = getGhCfg();
+
+    const syncPanel = document.createElement('div');
+    syncPanel.className = 'panel';
+    const trips = Array.from(new Set([...(cfg.knownTrips || []), ...(cfg.trip ? [cfg.trip] : [])]));
+    syncPanel.innerHTML = `
+      <h3>Trips &amp; GitHub Sync</h3>
+      <div class="grid-2">
+        <input id="ghRepoInput" class="field" placeholder="owner/trips (private repo)" value="${escapeHtml(cfg.repo || '')}">
+        <div style="display:flex;gap:6px">
+          ${trips.length ? `
+            <select id="ghTripSelect" class="field" style="flex:1">
+              <option value=""${!cfg.trip ? ' selected' : ''}>(repo root)</option>
+              ${trips.map((t) => `<option value="${escapeHtml(t)}"${cfg.trip === t ? ' selected' : ''}>${escapeHtml(t)}</option>`).join('')}
+            </select>
+          ` : ''}
+          <input id="ghTripInput" class="field" style="flex:1" placeholder="Trip folder (e.g. nz-2027)" value="${escapeHtml(cfg.trip || '')}">
+        </div>
+      </div>
+      <div class="grid-2">
+        <input id="ghTokenInput" class="field" type="password" placeholder="Fine-Grained PAT" value="${escapeHtml(cfg.token || '')}">
+        <div style="display:flex;gap:6px">
+          <input id="ghBranchInput" class="field" style="width:96px;flex-shrink:0" placeholder="main" value="${escapeHtml(cfg.branch || 'main')}">
+          <input id="commitMsgInput" class="field" style="flex:1" placeholder="Commit message">
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn" id="saveCfgBtn">Save &amp; List Trips</button>
+        <button class="btn" id="pullGhBtn">Pull</button>
+        <button class="btn solid" id="pushGhBtn">Push</button>
+      </div>
+      <div class="btn-group" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        <button class="btn" id="openFileBtn">Import .md</button>
+        <button class="btn" id="downloadMdBtn">Download .md</button>
+        <button class="btn" id="exportBundleBtn">Export Offline .html</button>
+      </div>
+    `;
+    main.appendChild(syncPanel);
+
+    const tripSel = syncPanel.querySelector('#ghTripSelect');
+    const tripInp = syncPanel.querySelector('#ghTripInput');
+    if (tripSel) {
+      tripSel.onchange = async () => {
+        tripInp.value = tripSel.value;
+        await switchActiveTrip(tripSel.value);
+      };
+    }
+    syncPanel.querySelector('#saveCfgBtn').onclick = async () => {
+      const prevTrip = cfg.trip || '';
+      const nextTrip = tripInp.value.trim();
+      const nextCfg = {
+        ...getGhCfg(),
+        repo: document.getElementById('ghRepoInput').value.trim(),
+        trip: nextTrip,
+        branch: document.getElementById('ghBranchInput').value.trim() || 'main',
+        token: document.getElementById('ghTokenInput').value.trim()
+      };
+      saveGhCfg(nextCfg);
+      const found = await discoverRepoTrips(nextCfg);
+      if (nextTrip !== prevTrip || (!nextTrip && getGhCfg().trip)) {
+        await switchActiveTrip(getGhCfg().trip || '');
+      } else {
+        render();
+      }
+      showToast(found.length ? `Saved (${found.length} trip${found.length > 1 ? 's' : ''} found)` : 'Saved');
+    };
+    syncPanel.querySelector('#pullGhBtn').onclick = () => pullFromGitHub(false);
+    syncPanel.querySelector('#pushGhBtn').onclick = pushToGitHub;
+    syncPanel.querySelector('#exportBundleBtn').onclick = exportStandaloneOfflineHtml;
+
+    syncPanel.querySelector('#openFileBtn').onclick = () => document.getElementById('localFileInput').click();
+    syncPanel.querySelector('#downloadMdBtn').onclick = () => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([state.md], { type: 'text/markdown;charset=utf-8' }));
+      a.download = `${activeTripNamespace() === 'default' ? 'plan' : activeTripNamespace()}.md`;
+      a.click();
+    };
+  }
+
+  function switchTab(tab) {
+    flushActiveInlineEditor();
+    state.tab = tab;
+    state.activeEdit = null;
+    document.querySelectorAll('.dock-btn').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab));
+    document.getElementById('expandToggleBtn').style.display = tab === 'itinerary' ? '' : 'none';
+    document.getElementById('editModeBtn').style.display = tab === 'sync' ? 'none' : '';
+    render();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function render() {
+    const main = document.getElementById('appMain');
+    main.innerHTML = '';
+    if (!state.parsed) state.parsed = parsePlan(state.md || '');
+    updateHeaderTitle(state.parsed);
+    const taskSecs = findTaskSections(state.parsed);
+    const doneCnt = taskSecs.reduce((acc, s) => acc + s.h3s.reduce((a, g) => a + g.tasks.filter((t) => t.checked).length, 0), 0);
+    const rmBtn = document.getElementById('removeDoneBtn');
+    if (rmBtn) {
+      rmBtn.style.display = (state.tab === 'tasks' && doneCnt > 0) ? '' : 'none';
+      rmBtn.textContent = `Remove done (${doneCnt})`;
+    }
+
+    if (state.query && state.tab !== 'sync') {
+      renderItineraryTab(main, state.parsed);
+      renderTasksTab(main, state.parsed);
+      renderNotesTab(main, state.parsed);
+      if (!main.children.length) {
+        main.innerHTML = `<div class="panel">No matches for "${escapeHtml(state.query)}".</div>`;
+      }
+      mountActiveInlineEditor();
+      return;
+    }
+
+    if (state.tab === 'itinerary') renderItineraryTab(main, state.parsed);
+    else if (state.tab === 'tasks') renderTasksTab(main, state.parsed);
+    else if (state.tab === 'notes') renderNotesTab(main, state.parsed);
+    else if (state.tab === 'sync') renderSyncTab(main);
+    mountActiveInlineEditor();
+    hydrateAllPdfLinks(state.md);
+  }
+
+  document.addEventListener('click', (e) => {
+    const addBtn = e.target.closest('[data-add-at]');
+    if (addBtn) {
+      e.preventDefault();
+      insertNewItemAt(Number(addBtn.dataset.addAt), addBtn.dataset.addPrefix || '- ');
+      return;
+    }
+    const rangeBtn = e.target.closest('[data-edit-range]');
+    if (rangeBtn) {
+      e.preventDefault();
+      const [s, end] = rangeBtn.dataset.editRange.split(':').map(Number);
+      openBlockEditor(s, end, { raw: true });
+      return;
+    }
+    const editBtnOrBlock = e.target.closest('[data-edit-line]');
+    if (editBtnOrBlock && (state.editMode || editBtnOrBlock.tagName === 'BUTTON')) {
+      e.preventDefault();
+      const idx = Number(editBtnOrBlock.dataset.editLine);
+      openBlockEditor(idx, idx);
+      return;
+    }
+    const codeEl = e.target.closest('code.copyable');
+    if (codeEl) {
+      const val = codeEl.getAttribute('data-copy') || codeEl.textContent;
+      navigator.clipboard?.writeText(val).then(() => showToast(`Copied ${val}`));
+      return;
+    }
+    const pdfEl = e.target.closest('.pdf-trigger');
+    if (pdfEl) {
+      const curHref = pdfEl.getAttribute('href') || '';
+      if (curHref.startsWith('blob:') && location.origin !== 'null') {
+        return; // Let native <a href="blob:..." target="_blank"> open straight in a new tab
+      }
+      e.preventDefault();
+      openPdfInNewTab(pdfEl.dataset.pdf, pdfEl.dataset.href);
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
+      e.preventDefault();
+      document.getElementById('searchInput').focus();
+    } else if (e.key === 'Escape') {
+      closeModal();
+    }
+  });
+
+  document.querySelectorAll('.dock-btn').forEach((btn) => {
+    btn.onclick = () => switchTab(btn.dataset.tab);
+  });
+
+  const searchInput = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('clearSearchBtn');
+  searchInput.oninput = () => {
+    state.query = searchInput.value.trim();
+    clearBtn.style.display = state.query ? 'block' : 'none';
+    render();
+  };
+  clearBtn.onclick = () => {
+    searchInput.value = '';
+    state.query = '';
+    clearBtn.style.display = 'none';
+    render();
+  };
+
+  document.getElementById('editModeBtn').onclick = (e) => {
+    if (state.editMode) flushActiveInlineEditor();
+    state.editMode = !state.editMode;
+    if (!state.editMode) state.activeEdit = null;
+    document.body.classList.toggle('edit-mode', state.editMode);
+    e.currentTarget.classList.toggle('active', state.editMode);
+    e.currentTarget.textContent = state.editMode ? 'Done' : 'Edit';
+    render();
+    if (state.editMode) showToast('Tap any item to edit');
+  };
+
+  document.getElementById('undoBtn').onclick = undoLastEdit;
+
+  document.getElementById('expandToggleBtn').onclick = (e) => {
+    state.allExpanded = !state.allExpanded;
+    if (!state.allExpanded) state.openDays.clear();
+    e.currentTarget.innerHTML = state.allExpanded
+      ? 'Collapse<span class="hide-xs"> all</span>'
+      : 'Expand<span class="hide-xs"> all</span>';
+    render();
+  };
+
+  document.getElementById('removeDoneBtn').onclick = removeCheckedTasks;
+
+  document.getElementById('localFileInput').onchange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    state.md = text;
+    state.dirty = true;
+    lsSet(keyMd(), text);
+    lsSet(keyDirty(), '1');
+    idbPut(idbMdKey(), text);
+    state.parsed = parsePlan(text);
+    updateDirtyIndicator();
+    render();
+    showToast(`Loaded ${file.name}`);
+  };
+
+  async function loadSameOriginPlan(force = false) {
+    if (!location.protocol.startsWith('http')) return;
+    try {
+      const res = await fetch('./plan.md', { cache: 'no-cache' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      let md = await res.text();
+
+      if (force || !state.dirty) {
+        state.md = md;
+        state.dirty = false;
+        lsSet(keyMd(), md);
+        lsSet(keyDirty(), '0');
+        await idbPut(idbMdKey(), md);
+        state.parsed = parsePlan(md);
+        updateDirtyIndicator();
+        render();
+      }
+      (async () => {
+        for (const fname of getReferencedPdfs(md)) {
+          if (!(await idbGet(idbPdfKey(fname)))) {
+            try {
+              const pr = await fetch('./attachments/' + fname);
+              if (pr.ok) { const pb = new Blob([await pr.blob()], { type: 'application/pdf' }); await idbPut(idbPdfKey(fname), pb); registerPdfBlobUrl(fname, pb); }
+            } catch (_) {}
+          }
+        }
+      })();
+    } catch (_) {
+      if (!state.md) {
+        const cachedMd = await idbGet(idbMdKey());
+        if (cachedMd) {
+          state.md = cachedMd;
+          state.parsed = parsePlan(cachedMd);
+          render();
+        }
+      }
+      // On split public-shell deployment (no same-origin ./plan.md), auto-sync active trip from private GitHub repo when clean
+      const cfg = getGhCfg();
+      if (cfg.repo && cfg.token && !state.dirty && navigator.onLine !== false) {
+        await pullFromGitHub(true);
+        if (state.md) return;
+      }
+      if (!state.md) {
+        document.getElementById('appMain').innerHTML = `<div class="panel">Open <strong>Sync</strong> to pull <code>plan.md</code> from GitHub or load a local file.</div>`;
+      }
+    }
+  }
+
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    navigator.serviceWorker.register('./sw.js').then((reg) => reg.update()).catch(() => {});
+  }
+
+  const sysDarkMq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  let themePref = lsGet(LS_THEME) || 'system';
+  if (!['system', 'light', 'dark'].includes(themePref)) themePref = 'system';
+
+  function applyTheme(pref) {
+    themePref = pref;
+    const isDark = pref === 'dark' || (pref === 'system' && sysDarkMq?.matches);
+    if (pref === 'system') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', pref);
+    }
+    const meta = document.getElementById('themeColorMeta');
+    if (meta) meta.setAttribute('content', isDark ? '#0b0e14' : '#f5efe6');
+    document.querySelectorAll('.theme-opt').forEach((b) => {
+      b.classList.toggle('active', b.dataset.themeOpt === pref);
+    });
+  }
+
+  document.querySelectorAll('.theme-opt').forEach((btn) => {
+    btn.onclick = () => {
+      const next = btn.dataset.themeOpt;
+      lsSet(LS_THEME, next);
+      applyTheme(next);
+    };
+  });
+  if (sysDarkMq?.addEventListener) {
+    sysDarkMq.addEventListener('change', () => { if (themePref === 'system') applyTheme('system'); });
+  }
+  applyTheme(themePref);
+
+  updateDirtyIndicator();
+  if (state.md) {
+    state.parsed = parsePlan(state.md);
+    render();
+  }
+  loadSameOriginPlan(false);
+})();
+</script>
+</body>
+</html>
